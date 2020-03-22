@@ -242,14 +242,16 @@ def epoch_train(train, model, optimizer,
                     y = y.to(device)
 
                 y_ = model(x)
+
+                y_ = y_.reshape(-1, y_.shape[-1])
+                y = y.reshape(-1)
+
                 loss = loss_fn(y_, y)
                 correct = y.eq(y_.max(1)[1]).sum()
-                #correct = 0
 
                 cur_loss = loss
                 loss.backward()
                 optimizer.step()
-                
 
                 loss_sum += cur_loss
                 correct_all += correct
