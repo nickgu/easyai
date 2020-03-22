@@ -246,7 +246,7 @@ def epoch_train(train, model, optimizer,
 
                 loss_sum += cur_loss
                 correct_all += correct
-                count += len(x)
+                count += y.shape[0]
                 epoch_count += 1
                 bar.set_description("Loss:%.5f Acc:%.5f" % (
                     loss_sum / epoch_count, correct_all*1. / count))
