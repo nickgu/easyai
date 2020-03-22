@@ -179,8 +179,7 @@ def epoch_test(dataloader, model, device=None, precision_threshold=None, current
     #   max(1) : max dim at dim-1
     #   [1] : get dim.
     with torch.no_grad():
-        # TODO
-        # model.eval()
+        model.eval()
 
         total = 0
         hit = 0
@@ -206,20 +205,19 @@ def epoch_test(dataloader, model, device=None, precision_threshold=None, current
         return precision
 
 def epoch_train(train, model, optimizer, 
-        loss_fn, epoch, batch_size=32, device=None, validation=None, validation_epoch=10,
-        scheduler=None, validation_scheduler=None):
+        loss_fn, epoch, batch_size=32, device=None, 
+        validation=None, validation_epoch=10,
+        scheduler=None, validation_scheduler=None,
+        post_process=None):
     try:
         '''
         import torchvision
         T = torchvision.transforms.ToPILImage()
         '''
         best = 0
-        # TODO
-        # model.train()
+        model.train()
         for e in range(epoch):
             print 'Epoch %d:' % e
-            # DropLast??
-            print 'LR:', optimizer.state_dict()['param_groups'][0]['lr']
             bar = tqdm.tqdm(train)
 
             loss_sum = 0
@@ -229,13 +227,6 @@ def epoch_train(train, model, optimizer,
                 
             #first = True
             for x, y in bar:
-                '''
-                if first:
-                    img = T(x[0])
-                    img.show()
-                    first = False
-                '''
-
                 optimizer.zero_grad()
                 if device:
                     x = x.to(device)
@@ -274,8 +265,12 @@ def epoch_train(train, model, optimizer,
                 if prec > best:
                     best = prec
 
-    except Exception, e:
-        pydev.err(e)
+            if post_process:
+                pydev.info('PostProcessing..')
+                post_process(e)
+
+    except Exception, ex:
+        pydev.err(ex)
         pydev.err('Training Exception(may be interrupted by control.)')
 
 
